@@ -25,7 +25,9 @@ jobs:
 
     - name: cmake configure libopenblt
       working-directory: ./firmware/ext/openblt/Host/Source/LibOpenBLT/build
-      run: cmake -DCMAKE_BUILD_TYPE=Release ..
+      run: |
+            sudo apt-get install libusb-1.0-0-dev
+            cmake -DCMAKE_BUILD_TYPE=Release ..
 
     - name: make libopenblt
       working-directory: ./firmware/ext/openblt/Host/Source/LibOpenBLT/build
