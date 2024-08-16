@@ -249,7 +249,7 @@ jobs:
          #   folder: config/boards/atlas
          #   ini-file: fome_atlas.ini
             
-          - build-target: stm32mega_board
+          - build-target: stm32mega
             folder: config/boards/stm32mega_board
             ini-file: fome_stm32mega_board.ini
 
