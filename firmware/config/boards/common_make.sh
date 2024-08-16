@@ -44,18 +44,18 @@ rm -f deliver/*
 rm build/fome.bin build/fome.srec
 
 # Extract the firmware's base address from the elf - it may be different depending on exact CPU
-firmwareBaseAddress="$(objdump -h -j .vectors build/fome.elf | awk '/.vectors/ {print $5 }')"
+firmwareBaseAddress="$(arm-none-eabi-objdump -h -j .vectors build/fome.elf | awk '/.vectors/ {print $5 }')"
 checksumAddress="$(printf "%X\n" $((0x$firmwareBaseAddress+0x1c)))"
 
 echo "Base address is 0x$firmwareBaseAddress"
 echo "Checksum address is 0x$checksumAddress"
 
 echo "$SCRIPT_NAME: invoking hex2dfu to place image checksum"
-$HEX2DFU -i build/fome.hex -c $checksumAddress -b build/fome.bin
+$HEX2DFU -i build/fome.hex -c $checksumAddress -o build/fome.bin
 rm build/fome.hex
 # re-make hex, srec with the checksum in place
-objcopy -I binary -O ihex --change-addresses=0x$firmwareBaseAddress build/fome.bin build/fome.hex
-objcopy -I binary -O srec --change-addresses=0x$firmwareBaseAddress build/fome.bin build/fome.srec
+arm-none-eabi-objcopy -I binary -O ihex --change-addresses=0x$firmwareBaseAddress build/fome.bin build/fome.hex
+arm-none-eabi-objcopy -I binary -O srec --change-addresses=0x$firmwareBaseAddress build/fome.bin build/fome.srec
 
 if [ "$USE_OPENBLT" = "yes" ]; then
   # this image is suitable for update through bootloader only

@@ -11,31 +11,31 @@
 static void setInjectorPins() {
 	engineConfiguration->injectionPinMode = OM_DEFAULT;
 
-	engineConfiguration->injectionPins[0] = Gpio::D6;
-	engineConfiguration->injectionPins[1] = Gpio::D7;
-	engineConfiguration->injectionPins[2] = Gpio::D8;
-	engineConfiguration->injectionPins[3] = Gpio::D9;
-	engineConfiguration->injectionPins[4] = Gpio::D10;
-	engineConfiguration->injectionPins[5] = Gpio::D11;
-	engineConfiguration->injectionPins[6] = Gpio::D12;
-	engineConfiguration->injectionPins[7] = Gpio::D13;
+	engineConfiguration->injectionPins[0] = Gpio::B15;
+	engineConfiguration->injectionPins[1] = Gpio::B14;
+	engineConfiguration->injectionPins[2] = Gpio::B12;
+	engineConfiguration->injectionPins[3] = Gpio::B13;
+	engineConfiguration->injectionPins[4] = Gpio::A8;
+	engineConfiguration->injectionPins[5] = Gpio::E7;
+	engineConfiguration->injectionPins[6] = Gpio::E13;
+	engineConfiguration->injectionPins[7] = Gpio::E10;
 }
 
 static void setIgnitionPins() {
 	engineConfiguration->ignitionPinMode = OM_DEFAULT;
 
-	engineConfiguration->ignitionPins[0] = Gpio::E15;
-	engineConfiguration->ignitionPins[1] = Gpio::E14;
-	engineConfiguration->ignitionPins[2] = Gpio::E13;
-	engineConfiguration->ignitionPins[3] = Gpio::E12;
-	engineConfiguration->ignitionPins[4] = Gpio::E11;
-	engineConfiguration->ignitionPins[5] = Gpio::E10;
-	engineConfiguration->ignitionPins[6] = Gpio::G8;
-	engineConfiguration->ignitionPins[7] = Gpio::G15;
+	engineConfiguration->ignitionPins[0] = Gpio::E2;
+	engineConfiguration->ignitionPins[1] = Gpio::E3;
+	engineConfiguration->ignitionPins[2] = Gpio::C13;
+	engineConfiguration->ignitionPins[3] = Gpio::E6;
+	engineConfiguration->ignitionPins[4] = Gpio::E4;
+	engineConfiguration->ignitionPins[5] = Gpio::E5;
+	engineConfiguration->ignitionPins[6] = Gpio::E0;
+	engineConfiguration->ignitionPins[7] = Gpio::B9;
 }
 
 
-// PE3 is error LED, configured in board.mk
+// TODO change !!! PE3 is error LED, configured in board.mk
 Gpio getCommsLedPin() {
 	return Gpio::G13;
 }
@@ -46,37 +46,6 @@ Gpio getRunningLedPin() {
 
 Gpio getWarningLedPin() {
 	return Gpio::G11;
-}
-
-static void setEtbConfig() {
-	// TLE9201 driver
-	// This chip has three control pins:
-	// DIR - sets direction of the motor
-	// PWM - pwm control (enable high, coast low)
-	// DIS - disables motor (enable low)
-
-	// Throttle #1
-	// PWM pin
-	engineConfiguration->etbIo[0].controlPin = Gpio::B8;
-	// DIR pin
-	engineConfiguration->etbIo[0].directionPin1 = Gpio::B9;
-	// Disable pin
-	engineConfiguration->etbIo[0].disablePin = Gpio::B7;
-	// Unused
-	engineConfiguration->etbIo[0].directionPin2 = Gpio::Unassigned;
-
-	// Throttle #2
-	// PWM pin
-	engineConfiguration->etbIo[1].controlPin = Gpio::Unassigned;
-	// DIR pin
-	engineConfiguration->etbIo[1].directionPin1 = Gpio::Unassigned;
-	// Disable pin
-	engineConfiguration->etbIo[1].disablePin = Gpio::Unassigned;
-	// Unused
-	engineConfiguration->etbIo[1].directionPin2 = Gpio::Unassigned;
-
-	// we only have pwm/dir, no dira/dirb
-	engineConfiguration->etb_use_two_wires = false;
 }
 
 static void 
@@ -128,7 +97,6 @@ static void setupEGT() {
 void setBoardConfigOverrides() {
 	setupVbatt();
 	setupSdCard();
-	setEtbConfig();
 	setStepperConfig();
 	setupEGT();
 

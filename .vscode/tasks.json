@@ -196,6 +196,22 @@
 			}
 		},
 		{
+			"label": "Build Firmware (stm32mega_board)",
+			"type": "shell",
+			"command": "bash ./compile_stm32mega.sh",
+			"windows": {
+				"command": "wsl bash -lc 'bash ./compile_stm32mega.sh'"
+			},
+			"options": {
+				"cwd": "${workspaceRoot}/firmware/config/boards/stm32mega_board"
+			},
+			"problemMatcher": [],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		},
+		{
 			"label": "Build Unit Tests",
 			"type": "shell",
 			"command": "make -j12",
