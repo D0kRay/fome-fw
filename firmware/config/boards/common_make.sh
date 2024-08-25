@@ -16,6 +16,7 @@ echo "Board dir is $BOARD_DIR"
 FW_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )/../..
 FW_DIR=$(readlink -f $FW_DIR)
 echo "FW dir is $FW_DIR"
+echo "objcopy version" $(objcopy --version)
 cd $FW_DIR
 
 mkdir -p .dep
@@ -30,10 +31,21 @@ if [ "${USE_OPENBLT-no}" = "yes" ]; then
   [ -e bootloader/blbuild/fome_bl.hex ] || { echo "FAILED to compile OpenBLT by $SCRIPT_NAME with $PROJECT_BOARD"; exit 1; }
 fi
 
+echo uname
+
 if uname | grep "NT"; then
   HEX2DFU=../misc/encedo_hex2dfu/hex2dfu.exe
+  OBJCOPY=objcopy
+  OBJDUMP=objdump
+else if uname | grep "darwin"; then # compile the hex2dfu for mac with arm chip new
+  gcc ../misc/hex2dfu/hex2dfu.c -o ../misc/encedo_hex2dfu/hex2dfu.bin
+  HEX2DFU=../misc/encedo_hex2dfu/hex2dfu.bin
+  OBJCOPY=arm-none-eabi-objcopy
+  OBJDUMP=arm-none-eabi-objdump
 else
   HEX2DFU=../misc/encedo_hex2dfu/hex2dfu.bin
+  OBJCOPY=objcopy
+  OBJDUMP=objdump
 fi
 chmod u+x $HEX2DFU
 
@@ -44,7 +56,7 @@ rm -f deliver/*
 rm build/fome.bin build/fome.srec
 
 # Extract the firmware's base address from the elf - it may be different depending on exact CPU
-firmwareBaseAddress="$(objdump -h -j .vectors build/fome.elf | awk '/.vectors/ {print $5 }')"
+firmwareBaseAddress="$($OBJDUMP -h -j .vectors build/fome.elf | awk '/.vectors/ {print $5 }')"
 checksumAddress="$(printf "%X\n" $((0x$firmwareBaseAddress+0x1c)))"
 
 echo "Base address is 0x$firmwareBaseAddress"
@@ -54,8 +66,8 @@ echo "$SCRIPT_NAME: invoking hex2dfu to place image checksum"
 $HEX2DFU -i build/fome.hex -c $checksumAddress -b build/fome.bin
 rm build/fome.hex
 # re-make hex, srec with the checksum in place
-objcopy -I binary -O ihex --change-addresses=0x$firmwareBaseAddress build/fome.bin build/fome.hex
-objcopy -I binary -O srec --change-addresses=0x$firmwareBaseAddress build/fome.bin build/fome.srec
+$OBJCOPY -I binary -O ihex --change-addresses=0x$firmwareBaseAddress build/fome.bin build/fome.hex
+$OBJCOPY -I binary -O srec --change-addresses=0x$firmwareBaseAddress build/fome.bin build/fome.srec
 
 if [ "$USE_OPENBLT" = "yes" ]; then
   # this image is suitable for update through bootloader only
